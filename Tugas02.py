@@ -117,11 +117,7 @@ def program_to_run(n) :
 #    try:
 def main(message):
     print('''
-*****************************
-PERMAINAN TEBAK ANGKA
-*****************************
 menu:
-
 1. Main
 2. Daftar
 3. High Score
@@ -136,4 +132,9 @@ menu:
 #    except:
 #        'err not an option'
 
+
+print('''
+*****************************
+PERMAINAN TEBAK ANGKA
+*****************************''')
 main('')
