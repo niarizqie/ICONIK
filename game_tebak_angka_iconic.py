@@ -3,14 +3,19 @@ import pandas as pd
 import getpass as gp
 import time
 from prettytable import PrettyTable as pt
+import os.path
+from os import path
 
 
 def select_main(menu_):
     print('Please enter username and pass')
     name = input('Name: ')
     password = gp.getpass('password: ')
-    
-    file_registrasi = open("user_data.txt", "r")
+
+    if not path.exists("user_data.txt"):
+        open("user_data.txt", 'w').close()
+
+    file_registrasi = open("user_data.txt", "r+")
     data_registrasi = file_registrasi.readlines()
     
     #menggabungkan user dan password
@@ -36,18 +41,13 @@ def select_main(menu_):
                 print("Password kamu salah")
                 #login()
             else:
-                print("***** Kamu belum Daftar nih... Daftar dulu yaaa ***** ")
-                main('')
+                main("***** Kamu belum Daftar nih... Daftar dulu yaaa ***** ")
     else :
         if cek_user== True:
-           print("\n") 
-           print("***** Username", name ,"Sudah ada, Silahkan pilih Username yang lainnya*****")
-           main('')
+           main("***** Username " + name + " Sudah ada, Silahkan pilih Username yang lainnya *****")
         else :
             select_daftar(name,password)
-            
-        
-    
+
 # =============================================================================
 #     daftar_object = open('username.txt', 'r')
 #     print(daftar_object)
@@ -61,7 +61,7 @@ def select_main(menu_):
 # =============================================================================
 
 def play_the_game(name):
-    rand_guess = np.random.randint(0, 20)
+    rand_guess = np.random.randint(1, 20)
     i = 10
     m = ''
     print("LOGIN BERHASIL !!!")
@@ -71,13 +71,14 @@ def play_the_game(name):
     print(f'''Silahkan masukkan angka acak antara 1 - 20
 [WARNING !!!] Inputan harus berupa ANGKA bilangan bulat''')   
     print(rand_guess)
+    win = 0
     while i > 0:
         score = i * 10
         print(f'''
 Score Anda saat ini  = {score}
 {m}
 ''')
-        
+
         user_guess = input('Masukkan angka: ')
 
         try:
@@ -85,7 +86,14 @@ Score Anda saat ini  = {score}
             if g == rand_guess:
                 m = f'Berhasil !!!, score anda adalah {score}'
                 save_score(name, score)
+                win = 1
                 i = -1
+            elif g >= 21:
+                m = '----- angka yg anda masukan lebih dari range ----'
+                i -= 1
+            elif g <= 0:
+                m = '----- angka yg anda masukan kurang dari range ----'
+                i -= 1
             elif g > rand_guess and (g - rand_guess) < 5:
                 m = '----- Angka anda sudah mendekati tapi masih lebih besar ----'
                 i -= 1
@@ -105,6 +113,9 @@ Score Anda saat ini  = {score}
         except:
             m = '----- Hanya boleh ANGKA, Score Anda dikurangi 20 :( ----'
             i -= 2
+
+    if i < 1 and win != 1:
+        m = '----- GAME OVER! ---- \n Coba Lagi...'
     main(m)
 
 
@@ -124,47 +135,58 @@ def select_daftar(name,password):
 
 
 def select_highscore():
-    
     print("\n HIGH SCORE")
-    highscore_list = open('user_score.txt','r')
-    
-    #split highscore
-    high = highscore_list.read().split("\n")  
-    high.remove("")
-    
-    user__ = [high_score.split("#$",1)[0] for high_score in high]    
-    list_user = set(user__)
 
-    score__ = [high_score.split("#$",1)[1] for high_score in high]    
-    
-    dic = {}
-    for x,y in zip(user__,score__):
-        dic.setdefault(x,[]).append(y)
-        
-    list_user = []
-    
-    for i in dic.keys():
-        list_user.append(i)
-        
-    list_score = []
-    
-    for i in dic.values():
-        for j in range(0,len(i)):
-            i[j] = int(i[j])
-        list_score.append(max(i))
-        
-    highscore_table = pt()
-    
-    highscore_table.add_column("Username", list_user)
-    highscore_table.add_column("Score", list_score)
-    
-    #sorting
-    highscore_table.sortby = "Score"
-    highscore_table.reversesort = True
-    
-    #top 10 high score
-    print(highscore_table.get_string(start=0,end=10))
-    highscore_list.close()
+    if path.exists('user_score.txt'):
+        highscore_list = open('user_score.txt','r+')
+
+        #split highscore
+        high = highscore_list.read().split("\n")
+        high.remove("")
+
+        user__ = [high_score.split("#$",1)[0] for high_score in high]
+        list_user = set(user__)
+
+        score__ = [high_score.split("#$",1)[1] for high_score in high]
+
+        dic = {}
+        for x,y in zip(user__,score__):
+            dic.setdefault(x,[]).append(y)
+
+        list_user = []
+
+        for i in dic.keys():
+            list_user.append(i)
+
+        list_score = []
+
+        for i in dic.values():
+            for j in range(0,len(i)):
+                i[j] = int(i[j])
+            list_score.append(max(i))
+
+        highscore_table = pt()
+
+        highscore_table.add_column("Username", list_user)
+        highscore_table.add_column("Score", list_score)
+
+        #sorting
+        highscore_table.sortby = "Score"
+        highscore_table.reversesort = True
+
+        #top 10 high score
+        print(highscore_table.get_string(start=0,end=10))
+        highscore_list.close()
+        print('1 :kembali, 2: keluar')
+        t = input('Pilihan anda: ')
+        if t == '1':
+            main('')
+        elif t == '2':
+            select_keluar()
+        else:
+            main('pilih yng benar')
+    else:
+        main('No high score Data')
 
     
 # =============================================================================
