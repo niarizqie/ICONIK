@@ -17,7 +17,7 @@ def select_main(menu_):
 
     file_registrasi = open("user_data.txt", "r+")
     data_registrasi = file_registrasi.readlines()
-    
+    file_registrasi.close()
     #menggabungkan user dan password
     userpassword_ = (name+"#$"+password+"\n")
     
@@ -122,6 +122,7 @@ Score Anda saat ini  = {score}
 def save_score(name, score):
     daftar_object = open('user_score.txt','a')
     daftar_object.write(f'{name}#${score}\n')
+    daftar_object.close()
     print('Score saved Success')
 
 
@@ -143,6 +144,7 @@ def select_highscore():
         #split highscore
         high = highscore_list.read().split("\n")
         high.remove("")
+        highscore_list.close()
 
         user__ = [high_score.split("#$",1)[0] for high_score in high]
         list_user = set(user__)
