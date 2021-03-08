@@ -9,8 +9,18 @@ from os import path
 
 def select_main(menu_):
     print('Please enter username and pass')
-    name = input('Name: ')
-    password = gp.getpass('password: ')
+    
+    name =''
+    password =''
+    while name=='' :   
+        name = input('Name: ')
+        if len(name) == 0 :
+            print("username tidak boleh kosong ")
+    
+    while password=='' :   
+        password = gp.getpass('password: ')
+        if len(password) == 0 :
+            print("password tidak boleh kosong ")
 
     if not path.exists("user_data.txt"):
         open("user_data.txt", 'w').close()
